@@ -1,0 +1,29 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+src/app/modules/gestion_des_referenciels/fournisseur/DetailsFournisseur copy.txt
+src/app/modules/gestion_des_referenciels/fournisseur/DetailsFournisseur1.txt
+src/app/modules/gestion_des_referenciels/fournisseur/DetailsFournisseur2.txt
+src/app/modules/gestion_des_referenciels/fournisseur/__partials/FournisseurDataTable copy.txt
+src/app/modules/gestion_des_referenciels/fournisseur/DetailsFournisseur copy_modifier.txt

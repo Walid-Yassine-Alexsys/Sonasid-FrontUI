@@ -1,0 +1,449 @@
+//
+// Theme style
+//
+
+// Initialize
+@import "init";
+
+// Components
+@import "./core/components/components";
+@import "components/components";
+
+// Layout
+@import "layout/layout";
+
+#kt_content_container {
+  @extend .container-fluid;
+}
+
+// Walid styles dont rewmove it
+
+/* PaysTableStyles.css */
+
+.pays-table {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.95rem;
+}
+
+.pays-table th {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+  border-right: none !important;
+  border-bottom: 1px solid #dee2e6;
+  text-align: center;
+}
+
+.pays-table td {
+  padding: 1rem;
+  border: none;
+  text-align: center;
+}
+
+.pays-table tr {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.badge-status {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-danger {
+  background-color: #fc5421;
+  color: white;
+}
+
+.badge-light {
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.badge-secondary {
+  background-color: #dee2e6;
+  color: #495057;
+}
+
+.badge-muted {
+  background-color: #e9ecef;
+  color: #6c757d;
+}
+
+// ArrivageDataTable Styles
+
+.p-datatable {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.95rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+  border-right: none !important;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  padding: 1rem;
+  border: none;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.badge-status {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-danger {
+  background-color: #fc5421;
+  color: white;
+}
+
+.badge-light {
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.badge-secondary {
+  background-color: #dee2e6;
+  color: #495057;
+}
+
+.badge-muted {
+  background-color: #e9ecef;
+  color: #6c757d;
+}
+
+.no-caret-toggle::after {
+  display: none !important;
+}
+
+// ArrivageSearchForm Styles
+
+.search-form .form-control,
+.search-form .form-select {
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  height: 54px;
+}
+
+.search-form .form-control::placeholder {
+  color: #adb5bd;
+  font-size: 0.95rem;
+}
+
+// Bouton filtre avec bordure propre et effet hover
+.search-form .btn-filter i {
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  padding: 15px;
+  font-size: 1rem;
+}
+
+.search-form .btn-filter:hover i {
+  background-color: #fc5421;
+}
+
+.search-icon-wrapper {
+  position: relative;
+}
+
+.search-icon-wrapper i {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  color: rgb(189, 173, 173);
+  font-size: 1.2rem;
+}
+
+.search-icon-wrapper input {
+  padding-left: 2.5rem !important;
+}
+
+
+.pays-table th,
+.pays-table td {
+  text-align: center !important; /* force center alignment */
+  vertical-align: middle;
+}
+
+
+@media (max-width: 768px) {
+  .search-form .row > div {
+    margin-bottom: 1rem;
+  }
+}
+
+// AddArrivage Styles
+
+.card-header-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.card-header-subtitle {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+// Arrivage Page Styles
+
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.card-header-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.card-header-subtitle {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.btn-add-arrivage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 10px;
+  padding: 0.65rem 1.25rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+// Parametrage Component Styles
+
+.form-container {
+  border-radius: 18px;
+  box-shadow: 0 0 0 1px #e0e0e0;
+  padding: 2.5rem;
+  background-color: #fff;
+}
+
+.form-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1.5rem;
+}
+
+.form-tab .nav-link.active {
+  background-color: #fc5421;
+  color: #fff;
+  border: none;
+}
+
+.form-tab .nav-link {
+  border: none;
+  color: #0f172a;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+// Pesage Component Styles
+
+.poids-display {
+  background-color: #000;
+  color: #00cc66;
+  font-size: 3.5rem;
+  padding: 20px 40px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Courier New", monospace;
+}
+
+.poids-display .unit {
+  font-size: 1.2rem;
+  margin-left: 8px;
+  color: white;
+}
+
+
+//badge style
+.badge-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.badge-status {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.no-caret-toggle::after {
+  display: none !important;
+}
+
+
+//pagination style
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  
+  .pagination {
+    .page-item {
+      &.active .page-link {
+        background-color: #fc5421;
+        border-color: #fc5421;
+        color: white;
+      }
+      
+      .page-link {
+        color: #495057;
+        border: 1px solid #dee2e6;
+        margin: 0 2px;
+        border-radius: 4px;
+        
+        &:hover {
+          background-color: #f8f9fa;
+        }
+      }
+    }
+  }
+}
+.pagination-container {
+  display: flex;
+  justify-content: center;
+}
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px; /* Adjust this value as needed */
+}
+
+.custom-title {
+  font-size: 2rem; /* Adjust as needed */
+}
+.custom-subtitle {
+  font-size: 1rem; /* Adjust as needed */
+}
+// Blocs de pesées côte à côte avec fond noir
+.poids-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.poids-wrapper .poids-display {
+  background-color: #000;
+  color: #00cc66;
+  font-size: 3rem;
+  padding: 20px 40px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "Courier New", monospace;
+  min-width: 160px;
+  text-align: center;
+}
+
+.poids-wrapper .poids-display .label {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 0.25rem;
+}
+
+.poids-wrapper .poids-display .value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.poids-wrapper .poids-display .value .unit {
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+// Pagination Styles
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+ 
+  .pagination {
+    .page-item {
+      &.active .page-link {
+        background-color: #fc5421;
+        border-color: #fc5421;
+        color: white;
+      }
+     
+      .page-link {
+        color: #495057;
+        border: 1px solid #dee2e6;
+        margin: 0 2px;
+        border-radius: 4px;
+        padding: 0.375rem 0.75rem;
+        cursor: pointer;
+       
+        &:hover {
+          background-color: #f8f9fa;
+        }
+      }
+
+      &.disabled .page-link {
+        color: #adb5bd;
+        pointer-events: none;
+        background-color: #fff;
+        opacity: 0.7;
+      }
+    }
+  }
+}
+
+.user-avatar-initials {
+  width: 42px;
+  height: 42px;
+  background-color: #f1f3f9;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #1f2937; // text-dark equivalent
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+}
