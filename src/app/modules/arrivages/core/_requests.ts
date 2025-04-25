@@ -60,4 +60,9 @@ export const getArrivageList = async (
   return response.data;
 };
 
+export const getArrivageById = async (id:number):Promise<any> => {
+  const url = `${baseUrl}/GetEntityFieldsWithFilters?entityName=Arrivage&pageSize=5&page=1&filters=Arrivage_Id:eq:${id}`;
+  const response = await axios.get(url);
+  return response.data.items;
+};
  
