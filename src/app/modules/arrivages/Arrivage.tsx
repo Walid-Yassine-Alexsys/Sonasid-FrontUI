@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Dropdown } from "react-bootstrap";
+import { Col, Dropdown, Row } from "react-bootstrap";
 import {
   BsInfoCircle,
   BsPencilSquare,
@@ -9,6 +9,7 @@ import {
   BsCreditCard,
   BsTruck,
   BsClipboardCheck,
+  BsPlus,
 } from "react-icons/bs";
 import Swal from "sweetalert2";
 import { getArrivageList } from "./core/_requests";
@@ -66,8 +67,7 @@ const Arrivage: React.FC = () => {
       // Assume getArrivageList is modified to accept searchParams
       const response: ArrivageResponse = await getArrivageList(
         pageNum,
-        params.searchTerm,
-        
+        params.searchTerm
       );
       setArrivages(response.items);
       const calculatedTotalPages = Math.ceil(response.totalItems / 5);
@@ -169,8 +169,7 @@ const Arrivage: React.FC = () => {
     } else if (rowData.arrivage_StatutInsertion === 0) {
       statusText = "En attente Service Logistique";
       className = "badge-status badge-warning";
-    }
-    else if (rowData.arrivage_StatutInsertion === 2) {
+    } else if (rowData.arrivage_StatutInsertion === 2) {
       statusText = "En attente Service Finance";
       className = "badge-status bg-primary";
     }
@@ -200,7 +199,7 @@ const Arrivage: React.FC = () => {
         >
           <BsInfoCircle className="me-2 text-info" /> Consultation
         </Dropdown.Item>
-        
+
         <Dropdown.Item
           onClick={() => navigate(`/paiement/${rowData.arrivage_Id}`)}
         >
@@ -230,15 +229,29 @@ const Arrivage: React.FC = () => {
 
   return (
     <div>
+      <Row className="pt-5 align-items-center justify-content-between">
+        <Col md={8}>
+          <div className="border-0">
+            <h1 className="d-flex flex-column align-items-start">
+              <span className="fw-900 text-dark">Arrivages</span>
+              <span className="text-muted mt-1 fw-semibold fs-7">
+                Liste des Arrivages
+              </span>
+            </h1>
+          </div>
+        </Col>
+        <Col md={4} className="d-flex justify-content-end">
+          <button
+            className="btn btn-primary btn-add-arrivage"
+            onClick={() => navigate("/add-arrivage")}
+          >
+            <BsPlus className="me-2" size={20} />
+            <span>Nouvelle Arrivage</span>
+          </button>
+        </Col>
+      </Row>
       {/* Title */}
-      <div className="border-0 pt-5">
-        <h3 className="d-flex flex-column align-items-start">
-          <span className="fw-900 text-dark">Arrivages</span>
-          <span className="text-muted mt-1 fw-semibold fs-7">
-            Liste des Arrivages
-          </span>
-        </h3>
-      </div>
+
       <div className="mt-10"></div>
       <div className="card shadow-sm">
         <div
@@ -246,7 +259,7 @@ const Arrivage: React.FC = () => {
             marginLeft: "10px",
             marginRight: "10px",
             marginBottom: "10px",
-            marginTop:"10px"
+            marginTop: "10px",
           }}
         >
           <ArrivageSearchForm onSearch={handleSearch} />
@@ -329,10 +342,7 @@ const Arrivage: React.FC = () => {
             />
           </DataTable>
         </div>
-      </div>
-      <div className="mt-10"></div>
-
-      {totalPages > 1 && (
+        {totalPages > 1 && (
         <div
           className="pagination-container mt-3"
           style={{ display: "flex", justifyContent: "center" }}
@@ -362,6 +372,11 @@ const Arrivage: React.FC = () => {
           </ul>
         </div>
       )}
+      </div>
+      
+      <div className="mt-10"></div>
+
+      
     </div>
   );
 };

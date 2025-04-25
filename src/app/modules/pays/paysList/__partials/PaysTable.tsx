@@ -138,7 +138,7 @@ const PaysTable: React.FC<PaysTableProps> = ({ search }) => {
         <table className="table pays-table m-0 text-center align-middle">
           <thead>
             <tr>
-              <th>Id</th>
+              
               <th>Nom</th>
               <th className="text-center">Actions</th>
             </tr>
@@ -147,7 +147,7 @@ const PaysTable: React.FC<PaysTableProps> = ({ search }) => {
             {pays.length > 0 ? (
               pays.map((pay) => (
                 <tr key={pay.pays_id}>
-                  <td>{pay.pays_id}</td>
+                  
                   <td>{pay.pays_Nom}</td>
                   <td className="action-dropdown ">
                     <Dropdown align="end">

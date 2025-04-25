@@ -440,15 +440,6 @@ const AddArrivage: React.FC = () => {
                         <td className="text-end">
                           <span
                             role="button"
-                            className="me-3"
-                            onClick={() => handleVoirDetails(commande.id)}
-                            title="Voir détails"
-                            style={{ color: "#fd7e14", fontSize: "1.2rem" }}
-                          >
-                            <BsEye />
-                          </span>
-                          <span
-                            role="button"
                             onClick={() => handleSupprimerCommande(commande.id)}
                             title="Supprimer"
                             style={{ color: "#dc3545", fontSize: "1.2rem" }}

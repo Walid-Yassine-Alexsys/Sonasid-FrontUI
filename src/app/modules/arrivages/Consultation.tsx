@@ -9,6 +9,7 @@ import {
   BsUpload,
 } from "react-icons/bs";
 import { getArrivageById } from "./core/_requests";
+import Swal from "sweetalert2";
 
 const Consultation: React.FC = () => {
   const { id } = useParams();
@@ -39,12 +40,25 @@ const Consultation: React.FC = () => {
   const [surveillantForm, setSurveillantForm] = useState({ pays: "", nom: "" });
   const paysOptions = ["Maroc", "France", "Espagne", "Italie"];
   const surveillantOptions = ["SGS Maroc", "Bureau Veritas", "Intertek"];
-  const handleSupprimerCommande = (id: string) => {
-    console.log("Suppression de la commande", id);
-  };
-  const handleVoirDetails = (id: string) => {
-    console.log("Voir détails de la commande", id);
-  };
+ const handleSupprimerCommande = (id: string) => {
+     Swal.fire({
+       title: "Êtes-vous sûr ?",
+       text: "Voulez-vous supprimer cette commande ?",
+       icon: "warning",
+       showCancelButton: true,
+       confirmButtonColor: "#d33",
+       cancelButtonColor: "#3085d6",
+       confirmButtonText: "Oui, supprimer",
+       cancelButtonText: "Annuler",
+     }).then((result) => {
+       if (result.isConfirmed) {
+         console.log("Suppression de la commande", id);
+         setCommandes(commandes.filter((commande) => commande.id !== id));
+         Swal.fire("Supprimé !", "La commande a été supprimée.", "success");
+       }
+     });
+   };
+ 
 
   const removeSurveillant = (index: number) => {
     setSurveillants((prev) => prev.filter((_, i) => i !== index));
@@ -122,38 +136,57 @@ const Consultation: React.FC = () => {
     }[]
   >([]);
   const handleSearchCommande = () => {
-    setIsSearching(true);
-    setTimeout(() => {
-      setCommandes([
-        {
+      if (!searchCommandeQuery.trim()) {
+        Swal.fire({
+          icon: "warning",
+          title: "Attention !",
+          text: "Veuillez entrer un numéro de commande",
+          confirmButtonColor: "#3085d6",
+        });
+        return;
+      }
+  
+      setIsSearching(true);
+      // Simulate API call
+      setTimeout(() => {
+        // Mock response
+        const mockCommande = {
           id: "CMD-2025-001",
-          numeroFactureProforma: "FP-2025-1001",
-          fournisseur: "ArcelorMittal",
-          devise: "EUR",
-          qualite: "A36",
-          tonnage: 5000,
-          tauxChange: 10.5,
-          delaiPaiement: "30 jours",
-          prixUnitaire: 450,
-          incoterm: "CIF",
-        },
-        {
-          id: "CMD-2025-002",
           numeroFactureProforma: "FP-2025-1002",
           fournisseur: "Tata Steel",
           devise: "USD",
+          deviseId: 1, // Assuming 1 is USD
           qualite: "S235",
           tonnage: 3000,
           tauxChange: 10.3,
-          delaiPaiement: "60 jours",
+          delaiPaiement: "60",
           prixUnitaire: 420,
           incoterm: "FOB",
-        },
-      ]);
-
-      setIsSearching(false);
-    }, 1000);
-  };
+        };
+  
+        if (searchCommandeQuery === mockCommande.id) {
+          setCommandes([mockCommande]);
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Commande trouvée",
+            showConfirmButton: false,
+            timer: 1500,
+            toast: true,
+          });
+        } else {
+          setCommandes([]);
+          Swal.fire({
+            icon: "error",
+            title: "Commande non trouvée",
+            text: `Aucune commande trouvée avec le numéro "${searchCommandeQuery}"`,
+            confirmButtonColor: "#3085d6",
+          });
+        }
+  
+        setIsSearching(false);
+      }, 1000);
+    };
 
   const getMappedArrivage = async (id: number) => {
     try {
@@ -166,7 +199,7 @@ const Consultation: React.FC = () => {
         id: `ARR-${item.arrivage_Id.toString().padStart(4, "0")}`,
         description: item.arrivage_Description || "N/A",
         numeroFactureProforma: item.arrivage_NumeroFactureProforma,
-        dateReception:"2025-05-09",
+        dateReception: "2025-05-09",
         pays: "France", // Replace with dynamic value if needed
         fournisseur: "ArcelorMittal", // Map using arrivage_FournisseurId if needed
         devise: item.arrivage_DeviseId === 1 ? "EUR" : "Unknown",
@@ -176,9 +209,11 @@ const Consultation: React.FC = () => {
         dateFixBuyers: "2025-01-25", // Static fallback — update if needed
         coutFinancement: item.arrivage_CoutFinancement?.toString() || "0",
         fretPrixDevise: item.arrivage_TauxChangement?.toString() || "0",
-        dateDepotLC:item.arrivage_DateDepotLettreCredit?.split("T")[0] || "N/A",
+        dateDepotLC:
+          item.arrivage_DateDepotLettreCredit?.split("T")[0] || "N/A",
         modalitePaiement: item.arrivage_ModalitePayment || "N/A",
-        dateLimiteChargement:item.arrivage_DateLimiteChargement?.split("T")[0] || "N/A",
+        dateLimiteChargement:
+          item.arrivage_DateLimiteChargement?.split("T")[0] || "N/A",
       };
 
       return mapped;
@@ -210,54 +245,57 @@ const Consultation: React.FC = () => {
           <h1 className="card-header-title mb-1">Détails de l'arrivage {id}</h1>
         </div>
       </div>
-      {JSON.stringify(formData)}
+
       <Card>
         <div className="card border-0 shadow-sm rounded-3 p-8">
           <Card.Body>
-            {/* ✅ GESTION DES COMMANDES */}
+            {/*  GESTION DES COMMANDES */}
             <div className="mb-5">
               <h1 className="card-header-title mb-2">
                 Importation des commandes
               </h1>
 
-              <Form>
-                <Row className="align-items-end">
-                  <Col md={6}>
-                    <Form.Group controlId="searchCommande">
-                      <Form.Label>N° de commande</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={searchCommandeQuery}
-                        onChange={(e) => setSearchCommandeQuery(e.target.value)}
-                        placeholder="Entrez un numéro de commande"
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md="auto">
-                    <Button
-                      variant="primary"
-                      onClick={handleSearchCommande}
-                      disabled={isSearching}
-                      className="d-flex align-items-center"
-                    >
-                      {isSearching ? (
-                        <>
-                          Recherche...{" "}
-                          <Spinner
-                            animation="border"
-                            size="sm"
-                            className="ms-2"
-                          />
-                        </>
-                      ) : (
-                        <>
-                          Rechercher <BsSearch className="ms-2" />
-                        </>
-                      )}
-                    </Button>
-                  </Col>
-                </Row>
-              </Form>
+              <div className="row align-items-end">
+                <div className="col-md-6">
+                  <div className="">
+                    <label htmlFor="searchCommande" className="form-label">
+                      N° de commande
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="searchCommande"
+                      value={searchCommandeQuery}
+                      onChange={(e) => setSearchCommandeQuery(e.target.value)}
+                      placeholder="Entrez un numéro de commande"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-auto d-flex align-items-center">
+                  <Button
+                    variant="primary"
+                    onClick={handleSearchCommande}
+                    disabled={isSearching}
+                    className="d-flex align-items-center"
+                  >
+                    {isSearching ? (
+                      <>
+                        <span>Recherche...</span>
+                        <Spinner
+                          animation="border"
+                          size="sm"
+                          className="ms-2 align-self-center"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <span>Rechercher</span>
+                        <BsSearch className="ms-2 align-self-center" />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
 
               {commandes.length > 0 && (
                 <Table bordered responsive className="mt-4">
@@ -282,19 +320,10 @@ const Consultation: React.FC = () => {
                         <td>{commande.qualite}</td>
                         <td>{commande.tonnage} tonnes</td>
                         <td>{commande.tauxChange}</td>
-                        <td>{commande.delaiPaiement}</td>
+                        <td>{commande.delaiPaiement} jours</td>
                         <td>{commande.prixUnitaire} €/tonne</td>
                         <td>{commande.incoterm}</td>
                         <td className="text-end">
-                          <span
-                            role="button"
-                            className="me-3"
-                            onClick={() => handleVoirDetails(commande.id)}
-                            title="Voir détails"
-                            style={{ color: "#fd7e14", fontSize: "1.2rem" }}
-                          >
-                            <BsEye />
-                          </span>
                           <span
                             role="button"
                             onClick={() => handleSupprimerCommande(commande.id)}
