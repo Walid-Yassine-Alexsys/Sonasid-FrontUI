@@ -2,11 +2,18 @@ import React, { useEffect, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dropdown } from "react-bootstrap";
-import { BsInfoCircle, BsPencilSquare, BsTrash, BsCreditCard, BsTruck, BsClipboardCheck } from "react-icons/bs";
+import {
+  BsInfoCircle,
+  BsPencilSquare,
+  BsTrash,
+  BsCreditCard,
+  BsTruck,
+  BsClipboardCheck,
+} from "react-icons/bs";
 import Swal from "sweetalert2";
 import { getArrivageList } from "./core/_requests";
 import { useNavigate } from "react-router-dom";
- 
+import ArrivageSearchForm from "./__partials/ArrivageSearchForm";
 
 interface Arrivage {
   arrivage_Id: number;
@@ -35,25 +42,35 @@ interface ArrivageResponse {
   totalItems: number;
 }
 
-
+interface SearchParams {
+  searchTerm: string;
+  status: string;
+  view: string;
+}
 
 const Arrivage: React.FC = () => {
   const [arrivages, setArrivages] = useState<Arrivage[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  //const [editingArrivage, setEditingArrivage] = useState<Arrivage | null>(null);
-  //const [viewingArrivage, setViewingArrivage] = useState<Arrivage | null>(null);
-  const navigate = useNavigate()
-  const loadArrivages = async (page: number) => {
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    searchTerm: "",
+    status: "",
+    view: "",
+  });
+  const navigate = useNavigate();
+
+  const loadArrivages = async (pageNum: number, params: SearchParams) => {
     setLoading(true);
     try {
+      // Assume getArrivageList is modified to accept searchParams
       const response: ArrivageResponse = await getArrivageList(
-        page,
-        //search,
+        pageNum,
+        params.searchTerm,
+        
       );
       setArrivages(response.items);
-      const calculatedTotalPages = Math.ceil(response.totalItems / 10);
+      const calculatedTotalPages = Math.ceil(response.totalItems / 5);
       setTotalPages(calculatedTotalPages > 0 ? calculatedTotalPages : 1);
     } catch (err) {
       const error = err as Error;
@@ -69,39 +86,20 @@ const Arrivage: React.FC = () => {
   };
 
   useEffect(() => {
-    loadArrivages(page);
-  }, [page]);
+    loadArrivages(page, searchParams);
+  }, [page, searchParams]);
 
   useEffect(() => {
     setPage(1);
-  }, []);
+  }, [searchParams]); // Reset to page 1 when search params change
 
-  // const handleDelete = async () => {
-  //   const result = await Swal.fire({
-  //     title: "Êtes-vous sûr ?",
-  //     text: "Cette action est irréversible.",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Oui, supprimer",
-  //     cancelButtonText: "Annuler",
-  //   });
-
-  //   if (result.isConfirmed) {
-  //     try {
-  //       //await deleteArrivage(id);
-  //       await Swal.fire(
-  //         "Supprimé!",
-  //         "L'arrivage a été supprimé.",
-  //         "success"
-  //       );
-  //       loadArrivages(page);
-  //     } catch (err) {
-  //       const error = err as Error;
-  //       console.error("Erreur lors de la suppression :", error);
-  //       Swal.fire("Erreur", error.message || "La suppression a échoué", "error");
-  //     }
-  //   }
-  // };
+  const handleSearch = (searchTerm: string, status: string, view?: string) => {
+    setSearchParams({
+      searchTerm,
+      status,
+      view: view || "",
+    });
+  };
 
   const renderPaginationItems = () => {
     const items = [];
@@ -164,45 +162,53 @@ const Arrivage: React.FC = () => {
     // Use arrivage_StatutInsertion or arrivage_Actif for status display
     let statusText = "Non défini";
     let className = "badge-status badge-secondary";
-    
+
     if (rowData.arrivage_StatutInsertion === 1) {
-      statusText = "Confirmé";
+      statusText = "En attente Service Site";
       className = "badge-status badge-success";
     } else if (rowData.arrivage_StatutInsertion === 0) {
-      statusText = "En attente";
+      statusText = "En attente Service Logistique";
       className = "badge-status badge-warning";
     }
-    
+    else if (rowData.arrivage_StatutInsertion === 2) {
+      statusText = "En attente Service Finance";
+      className = "badge-status bg-primary";
+    }
+
     if (!rowData.arrivage_Actif) {
       statusText = "Inactif";
       className = "badge-status badge-danger";
     }
-    
-    return (
-      <span className={className}>
-        {statusText}
-      </span>
-    );
+
+    return <span className={className}>{statusText}</span>;
   };
 
   const ActionsTemplate = (rowData: Arrivage) => (
-    <Dropdown align="end"   autoClose="outside">
-      <Dropdown.Toggle variant="light" size="sm" className="border-0 no-caret-toggle">
+    <Dropdown align="end" autoClose="outside">
+      <Dropdown.Toggle
+        variant="light"
+        size="sm"
+        className="border-0 no-caret-toggle"
+      >
         <i className="bi bi-three-dots-vertical"></i>
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
         <Dropdown.Header>Actions</Dropdown.Header>
-        <Dropdown.Item onClick={() => navigate(`/consultation/${rowData.arrivage_Id}`)}>
-          <BsInfoCircle className="me-2 text-info" /> Détails
+        <Dropdown.Item
+          onClick={() => navigate(`/consultation/${rowData.arrivage_Id}`)}
+        >
+          <BsInfoCircle className="me-2 text-info" /> Consultation
         </Dropdown.Item>
-        <Dropdown.Item onClick={() => {}}>
-          <BsPencilSquare className="me-2 text-primary" /> Modifier
-        </Dropdown.Item>
-        <Dropdown.Item>
+        
+        <Dropdown.Item
+          onClick={() => navigate(`/paiement/${rowData.arrivage_Id}`)}
+        >
           <BsCreditCard className="me-2 text-success" /> Modalité de paiement
         </Dropdown.Item>
-        <Dropdown.Item>
+        <Dropdown.Item
+          onClick={() => navigate(`/logistique/${rowData.arrivage_Id}`)}
+        >
           <BsTruck className="me-2 text-warning" /> Logistique
         </Dropdown.Item>
         <Dropdown.Item>
@@ -217,7 +223,8 @@ const Arrivage: React.FC = () => {
   );
 
   const DateTemplate = (dateString: string | null) => {
-    if (!dateString) return <span className="text-muted fst-italic">Non défini</span>;
+    if (!dateString)
+      return <span className="text-muted fst-italic">Non défini</span>;
     return new Date(dateString).toLocaleDateString("fr-FR");
   };
 
@@ -234,98 +241,102 @@ const Arrivage: React.FC = () => {
       </div>
       <div className="mt-10"></div>
       <div className="card shadow-sm">
-        <div className="card-body p-0">
-          <div className="row m-8 align-items-center">
-            <div className="col-md-4">
-              <form onSubmit={()=>{}} className="d-flex gap-2">
-                <input
-                  name="search"
-                  type="text"
-                  className="form-control"
-                  placeholder="Search..."
-                  value={""}
-                  onChange={()=>{}}
-                />
-                <button
-                  type="submit"
-                  className="btn btn-primary border"
-                  title="Filtrer"
-                >
-                  <i className="bi bi-search bi-lg"></i>
-                </button>
-              </form>
-              {/* {formik.errors.search && formik.touched.search && (
-                <div className="text-danger mt-1">{formik.errors.search}</div>
-              )} */}
-            </div>
+        <div
+          style={{
+            marginLeft: "10px",
+            marginRight: "10px",
+            marginBottom: "10px",
+            marginTop:"10px"
+          }}
+        >
+          <ArrivageSearchForm onSearch={handleSearch} />
+        </div>
 
-            <div className="col-md-8 d-flex justify-content-end mt-3 mt-md-0">
-              <button
-                className="btn btn-primary d-flex align-items-center"
-                onClick={() => navigate("/add-arrivage")}
-              >
-                <i className="fas fa-plus me-2"></i>{" "}
-                {/* FontAwesome plus icon */}
-                Nouveau Arrivage
-              </button>
-            </div>
-          </div>
+        <div
+          style={{
+            marginLeft: "10px",
+            marginRight: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          <DataTable
+            value={arrivages}
+            loading={loading}
+            emptyMessage="Aucun arrivage trouvé"
+            dataKey="arrivage_Id"
+            responsiveLayout="scroll"
+          >
+            <Column
+              field="arrivage_NumeroFactureProforma"
+              header="N° Facture"
+            />
+            <Column
+              field="arrivage_TonnageTotal"
+              header="Tonnage"
+              body={(rowData) =>
+                rowData.arrivage_TonnageTotal || (
+                  <span className="text-muted fst-italic">Non défini</span>
+                )
+              }
+            />
+            <Column
+              field="arrivage_DateBooking"
+              header="Date Booking"
+              body={(rowData) => DateTemplate(rowData.arrivage_DateBooking)}
+            />
+            <Column
+              field="arrivage_DateLimiteChargement"
+              header="Date Limite Chargement"
+              body={(rowData) =>
+                DateTemplate(rowData.arrivage_DateLimiteChargement)
+              }
+            />
+            <Column
+              header="Incoterm"
+              body={(rowData) =>
+                rowData.arrivage_Incoterm || (
+                  <span className="text-muted fst-italic">Non défini</span>
+                )
+              }
+            />
+            <Column
+              header="Prix Unitaire"
+              body={(rowData) =>
+                rowData.arrivage_PrixUnitaireTotale ? (
+                  `${rowData.arrivage_PrixUnitaireTotale}`
+                ) : (
+                  <span className="text-muted fst-italic">Non défini</span>
+                )
+              }
+            />
+            <Column
+              header="Modalité Paiement"
+              body={(rowData) =>
+                rowData.arrivage_ModalitePayment || (
+                  <span className="text-muted fst-italic">Non défini</span>
+                )
+              }
+            />
+            <Column header="Statut" body={StatusTemplate} />
+            <Column
+              header="Date de création"
+              body={(rowData) => DateTemplate(rowData.arrivage_DateCreation)}
+            />
+            <Column
+              header="Actions"
+              body={ActionsTemplate}
+              style={{ textAlign: "center", width: "6rem" }}
+            />
+          </DataTable>
         </div>
       </div>
       <div className="mt-10"></div>
-      <DataTable
-        value={arrivages}
-        loading={loading}
-        emptyMessage="Aucun arrivage trouvé"
-        dataKey="arrivage_Id"
-        responsiveLayout="scroll"
-        style={{ minHeight: '800px' }}
-      >
-        <Column field="arrivage_NumeroFactureProforma" header="N° Facture" />
-        <Column 
-          field="arrivage_TonnageTotal" 
-          header="Tonnage" 
-          body={(rowData) => rowData.arrivage_TonnageTotal || <span className="text-muted fst-italic">Non défini</span>}
-        />
-        <Column 
-          field="arrivage_DateBooking" 
-          header="Date Booking" 
-          body={(rowData) => DateTemplate(rowData.arrivage_DateBooking)}
-        />
-        <Column 
-          field="arrivage_DateLimiteChargement" 
-          header="Date Limite Chargement" 
-          body={(rowData) => DateTemplate(rowData.arrivage_DateLimiteChargement)}
-        />
-        <Column 
-          header="Incoterm" 
-          body={(rowData) => rowData.arrivage_Incoterm || <span className="text-muted fst-italic">Non défini</span>}
-        />
-        <Column 
-          header="Prix Unitaire" 
-          body={(rowData) => rowData.arrivage_PrixUnitaireTotale ? `${rowData.arrivage_PrixUnitaireTotale}` : <span className="text-muted fst-italic">Non défini</span>}
-        />
-        <Column 
-          header="Modalité Paiement" 
-          body={(rowData) => rowData.arrivage_ModalitePayment || <span className="text-muted fst-italic">Non défini</span>}
-        />
-        <Column 
-          header="Statut" 
-          body={StatusTemplate}
-        />
-        <Column 
-          header="Date de création" 
-          body={(rowData) => DateTemplate(rowData.arrivage_DateCreation)}
-        />
-        <Column
-          header="Actions"
-          body={ActionsTemplate}
-          style={{ textAlign: "center", width: "6rem" }}
-        />
-      </DataTable>
 
       {totalPages > 1 && (
-        <div className="pagination-container mt-3" style={{ display: 'flex', justifyContent: 'center' }}>
+        <div
+          className="pagination-container mt-3"
+          style={{ display: "flex", justifyContent: "center" }}
+        >
           <ul className="pagination mb-0">
             <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
               <button
@@ -337,7 +348,9 @@ const Arrivage: React.FC = () => {
               </button>
             </li>
             {renderPaginationItems()}
-            <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
+            <li
+              className={`page-item ${page === totalPages ? "disabled" : ""}`}
+            >
               <button
                 className="page-link"
                 onClick={() => setPage(page + 1)}
@@ -349,7 +362,6 @@ const Arrivage: React.FC = () => {
           </ul>
         </div>
       )}
-
     </div>
   );
 };

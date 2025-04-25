@@ -44,13 +44,20 @@ export const getDevise = async():Promise<any> =>{
     return response.data
 }
 
-export const getArrivageList = async(page:number,search = "") =>{
-    let url = `${baseUrl}/GetEntityFieldsWithFilters?entityName=Arrivage&pageSize=10&page=${page}`
-    if (search && search.length > 0) {
-        url += `&filters=Pays_Nom:contains:${search}`;
-    }
-    const response = await axios.get(url)    
-    return response.data
-}
+export const getArrivageList = async (
+  page: number,
+  searchTerm: string = "",
+) => {
+  let url = `${baseUrl}/GetEntityFieldsWithFilters?entityName=Arrivage&pageSize=5&page=${page}`;
+  
+  // Add filter for N° Facture Proforma
+  if (searchTerm && searchTerm.length > 0) {
+    url += `&filters=arrivage_NumeroFactureProforma:contains:${searchTerm}`;
+  }
+  
+  
+  const response = await axios.get(url);
+  return response.data;
+};
 
  

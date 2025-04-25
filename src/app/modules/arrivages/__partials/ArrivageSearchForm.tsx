@@ -3,12 +3,11 @@ import { Formik, Form, Field } from "formik";
 
 interface SearchFormProps {
   onSearch: (searchTerm: string, status: string, view?: string) => void;
-  translate: (key: string) => string;
+ 
 }
 
 const ArrivageSearchForm: React.FC<SearchFormProps> = ({
   onSearch,
-  translate,
 }) => {
   return (
     <div className="card-body">
@@ -27,14 +26,14 @@ const ArrivageSearchForm: React.FC<SearchFormProps> = ({
                 <Field
                   name="searchTerm"
                   className="form-control"
-                  placeholder="Rechercher par ID, commande ou fournisseur…"
+                  placeholder="Rechercher par N° Facture Proforma"
                 />
               </div>
 
               {/* Sélecteur de statut */}
               <div className="col-md-2 mb-3">
                 <Field as="select" name="status" className="form-select">
-                  <option value="">{translate("Tous les statuts")}</option>
+                  <option value="">{("Tous les statuts")}</option>
                   <option value="En cours">En cours</option>
                   <option value="Planifié">Planifié</option>
                   <option value="En transit">En transit</option>
