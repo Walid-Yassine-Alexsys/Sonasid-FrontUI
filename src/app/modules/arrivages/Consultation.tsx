@@ -8,6 +8,7 @@ import {
   BsTrash,
   BsUpload,
 } from "react-icons/bs";
+import { getArrivageById } from "./core/_requests";
 
 const Consultation: React.FC = () => {
   const { id } = useParams();
@@ -73,6 +74,7 @@ const Consultation: React.FC = () => {
     policeAssurance: "",
     certificatOrigine: "",
     factureAssurance: "",
+    dateLimiteChargement: "",
   });
 
   const handleUploadClick = (
@@ -101,7 +103,7 @@ const Consultation: React.FC = () => {
     if (e.target.files && e.target.files.length > 0) {
       const files = Array.from(e.target.files);
       setUploadedDocuments((prev) => [...prev, ...files]);
-      e.target.value = ""; 
+      e.target.value = "";
     }
   };
 
@@ -153,26 +155,41 @@ const Consultation: React.FC = () => {
     }, 1000);
   };
 
-  useEffect(() => {
-    const fakeData = {
-      id: "ARR-2025-001",
-      description: "Arrivage de ferraille E1 et E2",
-      numeroFactureProforma: "FP-2025-0458",
-      dateReception: "2025-01-10",
-      pays: "France",
-      fournisseur: "ArcelorMittal",
-      devise: "EUR",
-      tonnage: "2000",
-      tolerance: "5",
-      dateBooking: "2025-01-20",
-      dateFixBuyers: "2025-01-25",
-      coutFinancement: "20000",
-      fretPrixDevise: "10000",
-      dateDepotLC: "2025-01-30",
-      modalitePaiement: "LC", 
-    };
+  const getMappedArrivage = async (id: number) => {
+    try {
+      const items = await getArrivageById(id);
+      const item = items?.[0];
 
-    setFormData(fakeData);
+      if (!item) throw new Error("Arrivage not found");
+
+      const mapped = {
+        id: `ARR-${item.arrivage_Id.toString().padStart(4, "0")}`,
+        description: item.arrivage_Description || "N/A",
+        numeroFactureProforma: item.arrivage_NumeroFactureProforma,
+        dateReception:"2025-05-09",
+        pays: "France", // Replace with dynamic value if needed
+        fournisseur: "ArcelorMittal", // Map using arrivage_FournisseurId if needed
+        devise: item.arrivage_DeviseId === 1 ? "EUR" : "Unknown",
+        tonnage: item.arrivage_TonnageTotal?.toString() || "0",
+        tolerance: item.arrivage_ToleranceTonnage?.toString() || "0",
+        dateBooking: item.arrivage_DateBooking?.split("T")[0] || "N/A",
+        dateFixBuyers: "2025-01-25", // Static fallback — update if needed
+        coutFinancement: item.arrivage_CoutFinancement?.toString() || "0",
+        fretPrixDevise: item.arrivage_TauxChangement?.toString() || "0",
+        dateDepotLC:item.arrivage_DateDepotLettreCredit?.split("T")[0] || "N/A",
+        modalitePaiement: item.arrivage_ModalitePayment || "N/A",
+        dateLimiteChargement:item.arrivage_DateLimiteChargement?.split("T")[0] || "N/A",
+      };
+
+      return mapped;
+    } catch (error) {
+      console.error("Error mapping arrivage:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    getMappedArrivage(Number(id)).then(setFormData);
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<any>) => {
@@ -193,7 +210,7 @@ const Consultation: React.FC = () => {
           <h1 className="card-header-title mb-1">Détails de l'arrivage {id}</h1>
         </div>
       </div>
-
+      {JSON.stringify(formData)}
       <Card>
         <div className="card border-0 shadow-sm rounded-3 p-8">
           <Card.Body>
@@ -350,7 +367,7 @@ const Consultation: React.FC = () => {
                     <Form.Control
                       type="number"
                       name="toleranceTonnage"
-                      value={formData.toleranceTonnage}
+                      value={formData.tolerance}
                       onChange={handleChange}
                       placeholder="Ex: 5"
                     />
@@ -420,7 +437,7 @@ const Consultation: React.FC = () => {
                     <Form.Control
                       type="date"
                       name="dateReceptionFP"
-                      value={formData.dateReceptionFP}
+                      value={formData.dateReception}
                       onChange={handleChange}
                     />
                   </Form.Group>
@@ -440,22 +457,19 @@ const Consultation: React.FC = () => {
 
               <Row className="mb-3">
                 <Col md={4}>
-                  <Form.Group>
-                    <Form.Label>Modalité de paiement</Form.Label>
-                    <Form.Select
-                      name="modalitePaiement"
-                      value={formData.modalitePaiement}
-                      onChange={handleChange}
-                    >
-                      <option value="">-- Sélectionner une modalité --</option>
-                      <option value="LC">Lettre de Crédit</option>
-                      <option value="TT">Télétransfert</option>
-                      <option value="Remise documentaire">
-                        Remise documentaire
-                      </option>
-                      <option value="Autre">Autre</option>
-                    </Form.Select>
-                  </Form.Group>
+                  <Form.Select
+                    name="modalitePaiement"
+                    value={formData.modalitePaiement} // should be "TT", "LC", etc.
+                    onChange={handleChange}
+                  >
+                    <option value="">-- Sélectionner une modalité --</option>
+                    <option value="LC">Lettre de Crédit</option>
+                    <option value="TT">Télétransfert</option>
+                    <option value="Remise documentaire">
+                      Remise documentaire
+                    </option>
+                    <option value="Autre">Autre</option>
+                  </Form.Select>
                 </Col>
               </Row>
 
